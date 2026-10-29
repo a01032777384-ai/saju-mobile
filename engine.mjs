@@ -11,9 +11,9 @@ export function calculate(input, Solar=globalThis.Solar) {
  if(!ok)throw Error('존재하지 않는 날짜 또는 윤달입니다. 음력은 실제 윤달 여부를 확인해 주세요.');
  const s=c.getSolarCalendar(), l=c.getLunarCalendar();
  if(s.year<1900||s.year>2050)throw Error('지원 범위는 양력 환산 1900-01-01~2050-12-31입니다.');
- const at=(h,mi)=>{const kst=Date.UTC(s.year,s.month-1,s.day,h,mi);const bj=new Date(kst-3600000);const lunar=Solar.fromYmdHms(bj.getUTCFullYear(),bj.getUTCMonth()+1,bj.getUTCDate(),bj.getUTCHours(),bj.getUTCMinutes(),0).getLunar();return [lunar.getYearInGanZhiExact(),lunar.getMonthInGanZhiExact()];};
+ const at=(h,mi,sec=0)=>{const kst=Date.UTC(s.year,s.month-1,s.day,h,mi,sec);const bj=new Date(kst-3600000);const lunar=Solar.fromYmdHms(bj.getUTCFullYear(),bj.getUTCMonth()+1,bj.getUTCDate(),bj.getUTCHours(),bj.getUTCMinutes(),bj.getUTCSeconds()).getLunar();return [lunar.getYearInGanZhiExact(),lunar.getMonthInGanZhiExact()];};
  let ym=at(unknown?0:hour,unknown?0:minute), notes=[];
- if(unknown){const end=at(23,59);ym=ym.map((v,i)=>{if(v!==end[i]){notes.push(`${i?'월주':'연주'}는 절기 전후로 달라져 출생 시각 없이는 확정할 수 없습니다.`);return null;}return v;});}
+ if(unknown){const end=at(23,59,59);ym=ym.map((v,i)=>{if(v!==end[i]){notes.push(`${i?'월주':'연주'}는 절기 전후로 달라져 출생 시각 없이는 확정할 수 없습니다.`);return null;}return v;});}
  const day=Solar.fromYmdHms(s.year,s.month,s.day,12,0,0).getLunar().getDayInGanZhiExact2();
  const bi=Math.floor((hour+1)/2)%12;
  const time=unknown?null:STEMS[(STEMS.indexOf(day[0])%5*2+bi)%10]+BRANCHES[bi];

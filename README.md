@@ -1,5 +1,7 @@
 # 별담 · 모바일 사주
 
+접속 URL: https://gabkeunc-sys.github.io/saju-mobile/
+
 HTML/CSS/JavaScript 기반 GitHub Pages 사이트. Supabase Auth 이메일/비밀번호 인증을 사용합니다.
 
 ## 사용 방법
@@ -36,3 +38,6 @@ HTML/CSS/JavaScript 기반 GitHub Pages 사이트. Supabase Auth 이메일/비�
 
 ## 라이선스
 앱 코드 MIT. 원 저작권과 라이선스는 THIRD_PARTY_LICENSES.md 및 vendor/*-LICENSE에 보존합니다. 한국 음력 라이브러리 원본 TypeScript와 타입 제거한 ES 모듈을 함께 제공합니다.
+
+## 역법 대조 출처
+한국천문연구원 2024년 월력요항: https://astro.kasi.re.kr/kor/life/post/calendarData?search_year=2024 — 입춘 2월 4일 17:27(KST) 전후 17:26/17:28 계산 대조. 초 단위 계산값과 분 단위 공표값은 반올림 차이가 있을 수 있습니다.
