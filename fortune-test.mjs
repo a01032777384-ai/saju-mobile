@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';import lunar from './vendor/lunar.js';import {calculate,STEMS} from './engine.mjs';import {buildFortune,relation,parseDate,contacts} from './fortune.mjs';
+const natal=calculate({year:1990,month:5,day:15,hour:9},lunar.Solar);let n=0;const check=(name,fn)=>{fn();n++;console.log('PASS '+name);};
+check('갑목 10천간 십신 매핑',()=>assert.deepEqual([...STEMS].map(s=>relation('甲',s).god),['비견','겁재','식신','상관','편재','정재','편관','정관','편인','정인']));
+check('을목 음양 반전',()=>assert.deepEqual([...STEMS].map(s=>relation('乙',s).god),['겁재','비견','상관','식신','정재','편재','정관','편관','정인','편인']));
+check('일월연 리포트 구성과 충분한 본문',()=>{for(const period of ['day','month','year']){const r=buildFortune(natal,'2026-10-29',period,lunar.Solar);assert.equal(r.domains.length,5);assert.equal(r.domains.every(d=>d.paragraphs.length===5),true);assert.ok(r.domains.flatMap(d=>d.paragraphs).join('').length>2000);assert.equal(r.timeline.length,period==='day'?3:period==='month'?4:12);assert.equal(r.actions.length,3);}});
+check('동일 입력 결정적 결과',()=>assert.deepEqual(buildFortune(natal,'2026-10-29','day',lunar.Solar),buildFortune(natal,'2026-10-29','day',lunar.Solar)));
+check('날짜 변경은 실제 일진과 해석 변경',()=>{const a=buildFortune(natal,'2026-10-29','day',lunar.Solar),b=buildFortune(natal,'2026-10-30','day',lunar.Solar);assert.notEqual(a.pillar,b.pillar);assert.notEqual(a.rel.god,b.rel.god);assert.notDeepEqual(a.summary,b.summary);});
+check('월말과 윤년 체크포인트 범위',()=>{const a=buildFortune(natal,'2024-02-29','month',lunar.Solar);assert.equal(a.timeline[3].label,'22~29일 · 25일 체크포인트');assert.equal(a.anchor,'2024-02-15');});
+check('연간 기준과 입춘 전환 기록',()=>{const r=buildFortune(natal,'2024-01-01','year',lunar.Solar);assert.equal(r.pillar,'甲辰');assert.equal(r.anchor,'2024-07-01');assert.equal(r.shifts.length,1);assert.equal(r.shifts[0].to,'甲辰');});
+check('불가능한 조회일 거절',()=>{for(const x of ['2023-02-29','2026-13-01','2051-01-01','1899-12-31','2026-1-1',''])assert.throws(()=>parseDate(x));});
+check('미상시각 제외와 확정 기둥만 접점 계산',()=>{const u=calculate({year:1990,month:5,day:15,unknown:true},lunar.Solar);const r=buildFortune(u,'2026-10-29','year',lunar.Solar);assert.ok(r.limits.includes('미확정'));assert.ok(r.contacts.every(v=>v.label!=='시지'));});
+check('충과 합의 정확한 쌍',()=>{assert.equal(contacts({pillars:['甲子',null,null,null]},'午')[0].kind,'충');assert.equal(contacts({pillars:['甲子',null,null,null]},'丑')[0].kind,'육합');assert.equal(contacts({pillars:['甲子',null,null,null]},'卯').length,0);});
+check('지원범위 끝 연도',()=>{const r=buildFortune(natal,'2050-12-31','year',lunar.Solar);assert.equal(r.timeline.length,12);});
+console.log(n+' fortune checks passed');
