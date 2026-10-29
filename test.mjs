@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';import lunar from './vendor/lunar.js';import {calculate} from './engine.mjs';import {KoreanLunarCalendar} from './vendor/korean-lunar-calendar.mjs';
+let count=0;function test(name,fn){fn();console.log('PASS '+name);count++;}const c=x=>calculate(x,lunar.Solar);
+test('공식 한국 음력 윤5월 사례 2017-06-24',()=>{const r=c({year:2017,month:5,day:1,calendar:'lunar',leap:true,unknown:true});assert.deepEqual(r.solar,{year:2017,month:6,day:24});assert.equal(r.pillars[2],'壬午');assert.equal(r.pillars[3],null);assert.equal(r.total,6);});
+test('한국 음력 1956-01-21 = 1956-03-03',()=>{const r=c({year:1956,month:1,day:21,calendar:'lunar'});assert.deepEqual(r.solar,{year:1956,month:3,day:3});assert.equal(r.pillars[2],'己巳');});
+test('2024 설날 음력 1월1일',()=>assert.deepEqual(c({year:2024,month:1,day:1,calendar:'lunar'}).solar,{year:2024,month:2,day:10}));
+test('잘못된 양력, 윤달, 지원범위, 시간 거절',()=>{for(const x of [{year:2023,month:2,day:29},{year:2017,month:3,day:1,calendar:'lunar',leap:true},{year:1899,month:12,day:31},{year:2051,month:1,day:1},{year:2000,month:1,day:1,hour:24}])assert.throws(()=>c(x));});
+test('KST 입춘 경계 2024-02-04 17:26 / 17:28',()=>{const b=c({year:2024,month:2,day:4,hour:17,minute:26}),a=c({year:2024,month:2,day:4,hour:17,minute:28});assert.equal(b.pillars[0],'癸卯');assert.equal(a.pillars[0],'甲辰');assert.equal(b.pillars[1],'乙丑');assert.equal(a.pillars[1],'丙寅');});
+test('절기 경계일 시각 모름은 연월주 미확정',()=>{const r=c({year:2024,month:2,day:4,unknown:true});assert.equal(r.pillars[0],null);assert.equal(r.pillars[1],null);assert.equal(r.total,2);});
+test('자정 일주 경계 및 23시 동일 일간 기반 시주',()=>{const a=c({year:2024,month:2,day:10,hour:22}),b=c({year:2024,month:2,day:10,hour:23}),d=c({year:2024,month:2,day:11,hour:0});assert.equal(a.pillars[2],b.pillars[2]);assert.notEqual(b.pillars[2],d.pillars[2]);assert.equal(b.pillars[3][1],'子');assert.equal(d.pillars[3][1],'子');assert.notEqual(b.pillars[3][0],d.pillars[3][0]);});
+test('독립 한국 음력 라이브러리와 일주 1,812일 대조',()=>{for(let y=1900;y<=2050;y++)for(let m=1;m<=12;m++){const k=new KoreanLunarCalendar();k.setSolarDate(y,m,15);assert.equal(c({year:y,month:m,day:15,unknown:true}).pillars[2],k.getChineseGapja().day.slice(0,2));}});
+test('양음력 왕복 및 오행 8글자 합계',()=>{for(const [y,m,d]of [[1900,1,1],[2000,2,29],[2023,3,22],[2050,12,31]]){const r=c({year:y,month:m,day:d,hour:13});const l=r.lunar;assert.deepEqual(c({year:l.year,month:l.month,day:l.day,calendar:'lunar',leap:l.intercalation}).solar,r.solar);assert.equal(r.total,8);}});
+console.log(`${count} checks passed`);
