@@ -25,12 +25,10 @@ HTML/CSS/JavaScript 기반 GitHub Pages 사이트. Supabase Auth 이메일/비�
 ## 배포
 루트의 index.html을 GitHub Pages main/(root)로 배포합니다. 리소스는 상대경로, 화면은 hash 라우팅을 사용합니다. SDK는 jsDelivr의 @supabase/supabase-js 2.49.1 고정 버전을 사용합니다.
 
-### 아직 필요한 Supabase 설정
-연결된 관리 플러그인에는 Auth 설정 변경 도구가 없어 아래 설정은 아직 완료되지 않았습니다.
-- Authentication → Sign In / Providers → Email 확인 비활성화(실습용)
-- Authentication → URL Configuration → Site URL: https://gabkeunc-sys.github.io/saju-mobile/
-- Redirect URLs: https://gabkeunc-sys.github.io/saju-mobile/ 추가
-현재 이메일 확인이 활성화된 경우 UI에 실제 상태를 안내하며 가짜 로그인으로 대체하지 않습니다.
+### 실습용 회원가입 간소화
+이메일 확인 링크 없이 가입 즉시 자동 로그인합니다. 공개 anon JWT로 호출하는 practice-signup Edge Function이 서버 내 SUPABASE_SERVICE_ROLE_KEY를 사용하여 신규 Auth 사용자만 email_confirm=true로 생성합니다. 관리자 키는 소스/브라우저로 전달되지 않습니다. 기존 사용자의 비밀번호나 확인 상태는 변경하지 않습니다. 이후 로그인/세션/로그아웃은 표준 Supabase Auth SDK가 처리합니다. 이 실습 경로는 기본 이메일 확인 설정과 독립적이며, 프로덕션 전환 시 일반 확인 메일 흐름과 가입 요청 제한을 재설계하세요.
+
+Site URL/Redirect URL의 관리 설정은 변경되지 않았습니다. 현재 비밀번호 로그인 흐름은 이메일 리디렉션을 사용하지 않습니다.
 
 ## 검증
 `node test.mjs`: 9개 검사 통과. 한국 음력 공식 라이브러리의 사례(1956-01-21, 2017 윤5월1일), 설날, 입춘 전후, 자정/자시 경계, 미상 시각, 잘못된 날짜/윤달, 범위, 1900~2050 매월 15일 일주 1,812개 대조. 절기 시각은 계산 라이브러리의 모델에 의존하며 천문 관측을 보증하지 않습니다.
