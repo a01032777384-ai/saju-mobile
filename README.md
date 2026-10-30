@@ -1,6 +1,6 @@
 # 별담 운세 · 오늘부터 한 해까지
 
-접속 URL: https://gabkeunc-sys.github.io/saju-mobile/
+접속 URL: https://a01032777384-ai.github.io/saju-mobile/
 
 HTML/CSS/JavaScript 기반 GitHub Pages 사이트. Supabase Auth 이메일/비밀번호 인증을 사용합니다.
 
@@ -25,14 +25,17 @@ HTML/CSS/JavaScript 기반 GitHub Pages 사이트. Supabase Auth 이메일/비�
 ## 배포
 루트의 index.html을 GitHub Pages main/(root)로 배포합니다. 리소스는 상대경로, 화면은 hash 라우팅을 사용합니다. SDK는 jsDelivr의 @supabase/supabase-js 2.49.1 고정 버전을 사용합니다.
 
-### 실습용 회원가입 간소화
-이메일 확인 링크 없이 가입 즉시 자동 로그인합니다. 공개 anon JWT로 호출하는 practice-signup Edge Function이 서버 내 SUPABASE_SERVICE_ROLE_KEY를 사용하여 신규 Auth 사용자만 email_confirm=true로 생성합니다. 관리자 키는 소스/브라우저로 전달되지 않습니다. 기존 사용자의 비밀번호나 확인 상태는 변경하지 않습니다. 이후 로그인/세션/로그아웃은 표준 Supabase Auth SDK가 처리합니다. 이 실습 경로는 기본 이메일 확인 설정과 독립적이며, 프로덕션 전환 시 일반 확인 메일 흐름과 가입 요청 제한을 재설계하세요.
-
-Site URL/Redirect URL의 관리 설정은 변경되지 않았습니다. 현재 비밀번호 로그인 흐름은 이메일 리디렉션을 사용하지 않습니다.
+### 인증 연결 상태 (2026-10-30)
+기존 Supabase 프로젝트의 공개 키로 실제 이메일/비밀번호 로그인을 연결합니다.
+기존 회원가입 Edge Function은 원 사이트 Origin만 허용하고 일반 가입에는 이메일 확인이 필요합니다.
+따라서 새 배포 주소의 즉시 가입은 현재 준비 중으로 표시하며 가짜 인증을 제공하지 않습니다.
+`supabase/functions/practice-signup/index.ts`에 두 Pages Origin을 허용하는 변경본을 준비했지만 서버 배포는 미완료입니다.
+Supabase 관리 연결 후 이 함수를 배포하고 새 Origin의 가입을 검증한 다음 `config.mjs`의 signupMode를 `practice`로 바꿉니다.
+기존 프로젝트의 전역 이메일 확인 정책과 기존 사용자 계정은 변경하지 않았습니다.
+출생 데이터 테이블을 만들지 않으므로 이 앱에는 RLS 대상 데이터 테이블이 없습니다.
 
 ## 검증
-`node test.mjs`: 9개 검사 통과. 한국 음력 공식 라이브러리의 사례(1956-01-21, 2017 윤5월1일), 설날, 입춘 전후, 자정/자시 경계, 미상 시각, 잘못된 날짜/윤달, 범위, 1900~2050 매월 15일 일주 1,812개 대조. 절기 시각은 계산 라이브러리의 모델에 의존하며 천문 관측을 보증하지 않습니다.
-실제 배포/인증/모바일 검증의 최신 결과는 VALIDATION.md를 확인하세요.
+현재 배포에서 직접 실행한 결과는 VALIDATION.md만을 기준으로 확인하세요. 원 프로젝트의 과거 검증 기록을 이번 배포 결과로 간주하지 않습니다.
 
 ## 라이선스
 앱 코드 MIT. 원 저작권과 라이선스는 THIRD_PARTY_LICENSES.md 및 vendor/*-LICENSE에 보존합니다. 한국 음력 라이브러리 원본 TypeScript와 타입 제거한 ES 모듈을 함께 제공합니다.
@@ -55,3 +58,6 @@ Site URL/Redirect URL의 관리 설정은 변경되지 않았습니다. 현재 �
 - 이 콘텐츠는 전통 상징을 바탕으로 작성한 자기점검용 교육·오락 콘텐츠. 확률·수익·진단·상대의 마음을 예측하지 않음. 대운·신강신약·용신·신살을 계산한 종합 명리 감정이 아님.
 
 검사: `node test.mjs` 및 `node fortune-test.mjs`.
+
+## 원본과 수정 사항
+MIT 원본: https://github.com/gabkeunc-sys/saju-mobile . 저작권·라이선스를 보존합니다. 새 배포 계정, 인증 연결 상태 표시, 자동 세션 종료 시 개인 결과 정리를 반영했습니다.
