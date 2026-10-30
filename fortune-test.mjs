@@ -11,4 +11,6 @@ check('불가능한 조회일 거절',()=>{for(const x of ['2023-02-29','2026-13
 check('미상시각 제외와 확정 기둥만 접점 계산',()=>{const u=calculate({year:1990,month:5,day:15,unknown:true},lunar.Solar);const r=buildFortune(u,'2026-10-29','year',lunar.Solar);assert.ok(r.limits.includes('미확정'));assert.ok(r.contacts.every(v=>v.label!=='시지'));});
 check('충과 합의 정확한 쌍',()=>{assert.equal(contacts({pillars:['甲子',null,null,null]},'午')[0].kind,'충');assert.equal(contacts({pillars:['甲子',null,null,null]},'丑')[0].kind,'육합');assert.equal(contacts({pillars:['甲子',null,null,null]},'卯').length,0);});
 check('지원범위 끝 연도',()=>{const r=buildFortune(natal,'2050-12-31','year',lunar.Solar);assert.equal(r.timeline.length,12);});
+check('천간 십신 100조합을 라이브러리 표와 대조',()=>{const names={'比肩':'비견','劫财':'겁재','食神':'식신','伤官':'상관','偏财':'편재','正财':'정재','七杀':'편관','正官':'정관','偏印':'편인','正印':'정인'};for(const a of STEMS)for(const b of STEMS)assert.equal(relation(a,b).god,names[lunar.LunarUtil.SHI_SHEN[a+b]]);});
+check('각 분야의 해석 이유에 실제 기준일과 십신 표시',()=>{for(const period of ['day','month','year']){const r=buildFortune(natal,'2026-10-30',period,lunar.Solar);for(const d of r.domains){assert.ok(d.paragraphs[0].includes(r.anchor));assert.ok(d.paragraphs[0].includes(r.pillar));assert.ok(d.paragraphs[0].includes(r.rel.god));}}});
 console.log(n+' fortune checks passed');
